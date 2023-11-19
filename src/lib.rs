@@ -44,7 +44,7 @@ impl Default for Fairing {
 impl Default for CsrfConfig {
     fn default() -> Self {
         Self {
-            /// Set to 6hour for default in Database Session stores.
+            // Set to 6hour for default in Database Session stores.
             lifespan: Duration::days(1),
             cookie_name: "csrf_token".into(),
             cookie_len: 32,
@@ -125,9 +125,8 @@ impl RocketFairing for Fairing {
         let expires = OffsetDateTime::now_utc() + config.lifespan;
 
         request.cookies().add_private(
-            Cookie::build(config.cookie_name.clone(), encoded)
-                .expires(expires)
-                .finish(),
+            Cookie::build((config.cookie_name.clone(), encoded))
+                .expires(expires),
         );
     }
 }
@@ -140,7 +139,7 @@ impl<'r> FromRequest<'r> for CsrfToken {
         let config = request.guard::<&State<CsrfConfig>>().await.unwrap();
 
         match request.valid_csrf_token_from_session(&config) {
-            None => Outcome::Failure((Status::Forbidden, ())),
+            None => Outcome::Error((Status::Forbidden, ())),
             Some(token) => Outcome::Success(Self(base64::encode(token))),
         }
     }
