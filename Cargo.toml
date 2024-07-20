@@ -16,4 +16,4 @@ publish = true
 base64 = { version = "0.13.0" }
 bcrypt = { version = "0.9" }
 rand   = { version = "0.8.3" }
-rocket = { version = "0.5", features = ["secrets"] }
+rocket = { features = ["secrets"], git = "https://github.com/fenhl/Rocket", branch = "forms" }
